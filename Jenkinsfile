@@ -1,20 +1,27 @@
-node {
-    // Alur kerja akan dieksekusi pada agen Jenkins
-
-    // Tahap 'Build'
-    stage('Build') {
-        // Tahap ini akan menggunakan Docker untuk menjalankan langkah-langkah build
-        docker.image('node:16-buster-slim').inside("-p 3000:3000") {
-            sh 'npm install'
+    pipeline {
+        agent {
+            docker {
+                image 'node:16-buster-slim'
+                args '-p 3000:3000'
+            }
+        }
+        stages {
+            stage('Build') {
+                steps {
+                    sh 'npm install'
+                }
+            }
+            stage('Test') {
+                steps {
+                    sh './jenkins/scripts/test.sh'
+                }
+            }
+            stage('Deploy') { 
+                steps {
+                    sh './jenkins/scripts/deliver.sh' 
+                    input message: 'Sudah selesai menggunakan React App? (Klik "Proceed" untuk mengakhiri)' 
+                    sh './jenkins/scripts/kill.sh' 
+                }
+            }
         }
     }
-
-    // Tahap 'Test'
-    stage('Test') {
-        // Tahap ini juga akan menggunakan Docker untuk menjalankan langkah tes
-        docker.image('node:16-buster-slim').inside("-p 3000:3000") {
-            sh './jenkins/scripts/test.sh'
-        }
-    }
-}
-
