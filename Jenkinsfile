@@ -27,7 +27,6 @@
 
 	stage('Deploy') { 
                 steps {
-                    input message: 'Lanjut Proses Deploy? (Klik "Proceed" untuk melanjutkan deployment)'
 		    sh './jenkins/scripts/deliver.sh' 
                     sleep time : 1, unit :'MINUTES' 
                 }
